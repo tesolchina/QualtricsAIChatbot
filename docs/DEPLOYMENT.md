@@ -24,9 +24,9 @@ GitHub Pages (Frontend)  →  Railway (Backend Proxy)  →  OpenRouter API
 
 ### Step 3: Add Environment Variables
 1. In Railway, go to your project → **Variables** tab
-2. Add this variable:
+3. Add this variable:
    - **Key**: `OPENROUTER_API_KEY`
-   - **Value**: `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`
+   - **Value**: `YOUR_OPENROUTER_API_KEY` (paste your key from openrouter.ai — do NOT commit it)
 3. Click **Save**
 
 ### Step 4: Get Your Backend URL

@@ -33,7 +33,7 @@ git push origin alizarif
 3. Click **"+ New Variable"**
 4. Add:
    - **Variable**: `OPENROUTER_API_KEY`
-   - **Value**: `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`
+   - **Value**: `YOUR_OPENROUTER_API_KEY` (from OpenRouter; do NOT commit this anywhere)
 5. Click **"Add"**
 
 ### Step 4: Get Your URL
