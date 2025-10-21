@@ -7,11 +7,17 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log('Starting server...');
+console.log('PORT:', PORT);
+
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 if (!OPENROUTER_API_KEY) {
-  console.error('Missing OPENROUTER_API_KEY in .env');
+  console.error('❌ Missing OPENROUTER_API_KEY in environment variables');
+  console.error('Please add OPENROUTER_API_KEY in Railway dashboard');
   process.exit(1);
 }
+
+console.log('✅ OPENROUTER_API_KEY found');
 
 // Enable CORS for GitHub Pages and Qualtrics
 app.use(cors({
@@ -54,4 +60,8 @@ app.post('/api/chat', async (req, res) => {
 // Serve snippet and static files (optional)
 app.use(express.static(path.join(__dirname, '/')));
 
-app.listen(PORT, () => console.log(`Proxy server running on http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Proxy server running on port ${PORT}`);
+  console.log(`🌐 Health check: /health`);
+  console.log(`🤖 Chat endpoint: /api/chat`);
+});
