@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Chatbot Section */
+        .chatbot-section {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        #chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .assistant-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .typing-indicator {
+            background: #f0f0f0;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        #user-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            font-size: 16px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #1976d2;
+        }
+
+        .model-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .model-selector select {
+            flex: 1;
+        }
+
+        /* Scrollbar styling */
+        #chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #chat-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        #chat-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Chatbot Survey</h1>
+            <p>Interact with our AI assistant and share your feedback</p>
+        </div>
+
+        <div class="content">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h2>📋 Basic Information</h2>
+                <div class="form-group">
+                    <label for="name">Name (Optional):</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email (Optional):</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+            </div>
+
+            <!-- AI Chatbot Section -->
+            <div class="chatbot-section">
+                <h2>💬 Chat with AI Assistant</h2>
+                <div class="info-box">
+                    Ask the AI assistant anything! Try asking questions about products, services, or just have a conversation.
+                </div>
+
+                <!-- Model Selector -->
+                <div class="model-selector">
+                    <select id="model-select">
+                        <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Recommended)</option>
+                        <option value="anthropic/claude-3-haiku">Claude 3 Haiku (Fast & Economical)</option>
+                        <option value="google/gemini-pro-1.5">Google Gemini Pro 1.5</option>
+                        <option value="meta-llama/llama-3.1-70b-instruct">Llama 3.1 70B</option>
+                        <option value="qwen/qwen-2-72b-instruct">Qwen 2 72B (Good for Chinese)</option>
+                    </select>
+                </div>
+
+                <div id="chat-container"></div>
+                
+                <div class="chat-input-container">
+                    <input type="text" id="user-input" placeholder="Type your message here..." />
+                    <button class="btn btn-primary" id="send-button">Send</button>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="form-section">
+                <h2>📝 Feedback</h2>
+                <div class="form-group">
+                    <label for="rating">How would you rate your experience?</label>
+                    <select id="rating">
+                        <option value="">Select a rating</option>
+                        <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ Good</option>
+                        <option value="3">⭐⭐⭐ Average</option>
+                        <option value="2">⭐⭐ Poor</option>
+                        <option value="1">⭐ Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comments">Additional Comments:</label>
+                    <textarea id="comments" placeholder="Share your thoughts about the AI chatbot..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-submit" onclick="submitForm()">Submit Survey</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Connects to secure backend proxy
+        // Replace with your Railway/Render deployment URL after deploying server.js
+        const PROXY_URL = "https://your-app-name.railway.app"; // UPDATE THIS after deploying!
+        let conversationHistory = [];
+        let currentModel = "anthropic/claude-3.5-sonnet";
+
+        // DOM Elements
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const modelSelect = document.getElementById('model-select');
+
+        // Display initial greeting
+        displayMessage("Hello! I'm your AI assistant. How can I help you today?", "assistant-message");
+
+        // Event Listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        modelSelect.addEventListener('change', (e) => {
+            currentModel = e.target.value;
+            console.log('Model changed to:', currentModel);
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Display user message
+            displayMessage(message, "user-message");
+            userInput.value = "";
+
+            // Add to conversation history
+            conversationHistory.push({
+                role: "user",
+                content: message
+            });
+
+            // Show typing indicator
+            const typingId = 'typing-' + Date.now();
+            displayMessage("Typing...", "assistant-message typing-indicator", typingId);
+
+            // Disable send button
+            sendButton.disabled = true;
+            sendButton.textContent = "Sending...";
+
+            try {
+                const response = await fetch(`${PROXY_URL}/api/chat`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: currentModel,
+                        messages: conversationHistory,
+                        temperature: 0.7,
+                        max_tokens: 1000
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Remove typing indicator
+                removeMessage(typingId);
+
+                // Get assistant's response
+                const assistantMessage = data.choices[0].message.content;
+                
+                // Add to conversation history
+                conversationHistory.push({
+                    role: "assistant",
+                    content: assistantMessage
+                });
+
+                // Display assistant's response
+                displayMessage(assistantMessage, "assistant-message");
+
+            } catch (error) {
+                console.error('Error:', error);
+                removeMessage(typingId);
+                displayMessage(`Sorry, there was an error: ${error.message}`, "assistant-message error-message");
+            } finally {
+                // Re-enable send button
+                sendButton.disabled = false;
+                sendButton.textContent = "Send";
+            }
+        }
+
+        function displayMessage(message, className, id = null) {
+            const messageElement = document.createElement("div");
+            messageElement.textContent = message;
+            messageElement.className = `message ${className}`;
+            if (id) {
+                messageElement.id = id;
+            }
+            
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            return messageElement;
+        }
+
+        function removeMessage(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        function submitForm() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const rating = document.getElementById('rating').value;
+            const comments = document.getElementById('comments').value;
+
+            // Collect survey data
+            const surveyData = {
+                name: name,
+                email: email,
+                rating: rating,
+                comments: comments,
+                conversationHistory: conversationHistory,
+                model: currentModel,
+                timestamp: new Date().toISOString()
+            };
+
+            // For now, just log it (in production, send to your backend/Qualtrics)
+            console.log('Survey Data:', surveyData);
+            
+            alert('Thank you for your feedback! Survey submitted successfully.\n\n(Check console for data)');
+            
+            // You can send this to Qualtrics API or your backend
+            // sendToQualtrics(surveyData);
+        }
+
+        // Optional: Function to send data to Qualtrics
+        async function sendToQualtrics(data) {
+            // This is a placeholder - implement based on your Qualtrics setup
+            const QUALTRICS_API_KEY = "2oqyFwpp1EEQz71owwPWZs50vU0xlR20Pjlrve5D";
+            const QUALTRICS_DATACENTER = "hkbuchtl";
+            const SURVEY_ID = "YOUR_SURVEY_ID";
+
+            // Implement Qualtrics API call here
+            console.log('Would send to Qualtrics:', data);
+        }
+    </script>
+</body>
+</html>

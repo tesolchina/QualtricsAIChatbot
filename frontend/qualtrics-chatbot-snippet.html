@@ -1,0 +1,148 @@
+<style>
+  #qualtrics-chatbot-root {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 100%;
+    margin: 20px 0;
+  }
+  #chat-container {
+    height: 400px;
+    overflow-y: auto;
+    border: 2px solid #e0e0e0;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 10px;
+  }
+  .chat-message {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  .user-msg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-left: auto;
+    text-align: right;
+  }
+  .bot-msg {
+    background: #f3f4f6;
+    color: #333;
+  }
+  .typing-msg {
+    background: #f3f4f6;
+    color: #666;
+    font-style: italic;
+  }
+  #chat-input-wrapper {
+    display: flex;
+    gap: 10px;
+  }
+  #qualtrics-user-input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    font-size: 14px;
+  }
+  #qualtrics-user-input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  #qualtrics-send-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+  #qualtrics-send-btn:hover {
+    transform: translateY(-2px);
+  }
+  #qualtrics-send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+</style>
+
+<div id="qualtrics-chatbot-root">
+  <h3 style="margin-bottom: 15px; color: #333;">💬 Chat with AI Assistant</h3>
+  <div id="chat-container"></div>
+  <div id="chat-input-wrapper">
+    <input id="qualtrics-user-input" placeholder="Type your message here..." />
+    <button id="qualtrics-send-btn">Send</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // IMPORTANT: Replace this URL with your Railway deployment URL
+  const apiBase = 'https://your-app-name.up.railway.app';
+  const model = 'anthropic/claude-3.5-sonnet';
+  let history = [];
+
+  const container = document.getElementById('chat-container');
+  const input = document.getElementById('qualtrics-user-input');
+  const sendBtn = document.getElementById('qualtrics-send-btn');
+
+  // Show initial greeting
+  append('Hello! I\'m your AI assistant. How can I help you today?', 'bot');
+
+  function append(msg, type){
+    const div = document.createElement('div');
+    div.textContent = msg;
+    div.className = 'chat-message ' + (type === 'user' ? 'user-msg' : type === 'typing' ? 'typing-msg' : 'bot-msg');
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div;
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keypress', (e)=>{if(e.key==='Enter')send();});
+
+  async function send(){
+    const message = input.value.trim();
+    if(!message) return;
+    
+    append(message, 'user');
+    history.push({role:'user', content:message});
+    input.value = '';
+    
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending...';
+    
+    const typingDiv = append('Typing...', 'typing');
+
+    try{
+      const resp = await fetch(apiBase + '/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({model, messages: history, temperature:0.7, max_tokens:1000})
+      });
+      
+      const data = await resp.json();
+      container.removeChild(typingDiv);
+      
+      const assistant = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if(assistant){
+        append(assistant, 'bot');
+        history.push({role:'assistant', content:assistant});
+      }else{
+        append('No response from model. Please check your backend configuration.', 'bot');
+      }
+    }catch(err){
+      console.error(err);
+      container.removeChild(typingDiv);
+      append('Error: ' + err.message + '. Make sure your backend is deployed and the URL is correct.', 'bot');
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send';
+    }
+  }
+})();
+</script>

@@ -1,1 +1,1 @@
-web: node server.js
+backend/Procfile
